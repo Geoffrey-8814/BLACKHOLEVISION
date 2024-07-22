@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Camera Streams</title>
+    <style>
+        .tab {
+            overflow: hidden;
+            border-bottom: 1px solid #ccc;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #ccc;
+        }
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border-top: none;
+        }
+        .tabcontent .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            padding: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    </style>
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        function updateFrameRate(camera) {
+            var frameRate = document.getElementById(camera + "-frameRate").value;
+            fetch('/update-frame-rate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({camera: camera, frame_rate: frameRate}),
+            }).then(response => response.json())
+              .then(data => {
+                  console.log('Success:', data);
+                  clearInterval(window[camera + 'Interval']);
+                  window[camera + 'Interval'] = setInterval(() => updateFrame(camera), 1000 / frameRate);
+              })
+              .catch((error) => {
+                  console.error('Error:', error);
+              });
+        }
+
+        function updateResolution(camera) {
+            var resolution = document.getElementById(camera + "-resolution").value;
+            fetch('/update-resolution', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({camera: camera, resolution: resolution}),
+            }).then(response => response.json())
+              .then(data => {
+                  console.log('Success:', data);
+              })
+              .catch((error) => {
+                  console.error('Error:', error);
+              });
+        }
+
+        function updateFrame(camera) {
+            var img = document.getElementById(camera + '-frame');
+            img.src = '/get-latest-frame-' + camera + '?t=' + new Date().getTime();
+        }
+
+        function updateLayout() {
+            var layout = document.getElementById('layout').value;
+            fetch('/update-layout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({layout: layout}),
+            }).then(response => response.json())
+              .then(data => {
+                  console.log('Success:', data);
+              })
+              .catch((error) => {
+                  console.error('Error:', error);
+              });
+        }
+
+        function updateMarker() {
+            var marker = document.getElementById('marker').value;
+            fetch('/update-marker', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({marker:marker}),
+            }).then(response => response.json())
+              .then(data => {
+                  console.log('Success:', data);
+              })
+              .catch((error) => {
+                  console.error('Error:', error);
+              });
+        }
+
+        function updateBarValue() {
+            var barvalue = document.getElementById('barvalue').value;
+            document.getElementById('barValueDisplay').textContent = barvalue;
+            fetch('/update-barvalue', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({barvalue:barvalue}),
+            }).then(response => response.json())
+              .then(data => {
+                  console.log('Success:', data);
+              })
+              .catch((error) => {
+                  console.error('Error:', error);
+              });
+        }
+
+        window.onload = function() {
+            window.camera1Interval = setInterval(() => updateFrame('camera1'), 1000 / {{ camera1_frame_rate }});
+            window.camera2Interval = setInterval(() => updateFrame('camera2'), 1000 / {{ camera2_frame_rate }});
+            document.getElementById('barvalue').addEventListener('input', updateBarValue);
+
+        };
+    </script>
+</head>
+<body>
+
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'Monitor')" id="defaultOpen">Monitor</button>
+    <button class="tablinks" onclick="openTab(event, 'Apriltag')">Apriltag Detection</button>
+    <button class="tablinks" onclick="openTab(event, 'Layout')">Layout</button>
+</div>
+
+<div id="Monitor" class="tabcontent">
+    <h3>Monitor</h3>
+    <div class="form-group">
+        <label for="camera1-resolution">Resolution:</label>
+        <input type="text" id="camera1-resolution" value="{{ camera1_resolution }}">
+        <button onclick="updateResolution('camera1')">Update Resolution</button>
+    </div>
+    <div class="form-group">
+        <label for="camera1-frameRate">Frame Rate:</label>
+        <input type="number" id="camera1-frameRate" value="{{ camera1_frame_rate }}">
+        <button onclick="updateFrameRate('camera1')">Update Frame Rate</button>
+    </div>
+    <img id="camera1-frame" src="" alt="Camera 1 Frame">
+</div>
+
+<div id="Apriltag" class="tabcontent">
+    <h3>Apriltag Detection</h3>
+    <div class="form-group">
+        <label for="camera2-resolution">Resolution:</label>
+        <input type="text" id="camera2-resolution" value="{{ camera2_resolution }}">
+        <button onclick="updateResolution('camera2')">Update Resolution</button>
+    </div>
+    <div class="form-group">
+        <label for="camera2-frameRate">Frame Rate:</label>
+        <input type="number" id="camera2-frameRate" value="{{ camera2_frame_rate }}">
+        <button onclick="updateFrameRate('camera2')">Update Frame Rate</button>
+    </div>
+    <img id="camera2-frame" src="" alt="Camera 2 Frame">
+</div>
+
+<div id="Layout" class="tabcontent">
+    <h3>Layout Settings</h3>
+    <div class="form-group">
+        <label for="layout">Choose Layout:</label>
+        <input type="text" id="layout" value="Default">
+        <button onclick="updateLayout()">Update Layout</button>
+    </div>
+    <div class="form-group">
+        <label for="marker">Choose marker:</label>
+        <input type="number" id="marker" value=666.66>
+        <button onclick="updateMarker()">Update Marker</button>
+    </div>
+    <div class="form-group">
+        <label for="barvalue">Bar Value:</label>
+        <input type="range" id="barvalue" min="0" max="100" value="50" oninput="updateBarValue()">
+        <span id="barValueDisplay">50</span>
+        <!-- <button onclick="updateBarValue()">Apply Bar Value</button> -->
+    </div>
+</div>
+
+<script>
+    document.getElementById("defaultOpen").click();
+</script>
+
+</body>
+</html>
