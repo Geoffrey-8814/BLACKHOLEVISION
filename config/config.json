@@ -1,0 +1,121 @@
+{
+  "time":10,
+  "cameras": [
+    {
+      "name": "testCamera",
+      "ID": "/dev/camera_top_right",
+      "pose":{
+        "x":0,
+        "y":0,
+        "z":1,
+        "roll":0,
+        "pitch":0,
+        "yaw":0
+      },
+      "cameraMatrix": [
+        [
+          877.09,
+          0,
+          776.03
+        ],
+        [
+          0,
+          872,
+          693.32
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "distortionCoeffs": [
+        -0.006119,
+        -0.045496,
+        0.0024756,
+        -0.014494,
+        0.01173
+      ]
+      
+    },
+    {
+      "name": "testCamera1",
+      "ID": "/dev/camera_bottom_right",
+      "pose":{
+        "x":0,
+        "y":0,
+        "z":1,
+        "roll":0,
+        "pitch":0,
+        "yaw":0
+      },
+      "cameraMatrix": [
+        [
+          877.09,
+          0,
+          776.03
+        ],
+        [
+          0,
+          872,
+          693.32
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "distortionCoeffs": [
+        -0.006119,
+        -0.045496,
+        0.0024756,
+        -0.014494,
+        0.01173
+      ]
+      
+    }
+  ],
+  "capture": {
+    "resolution": {
+        "width": 1600,
+        "height":1200
+    },
+    "FPS": 49,
+    "autoExposure": 1,
+    "exposure": 10,
+    "gain": 40,
+    "brightness": 30,
+    "contrast": 100
+  },
+  "apriltagDetector": {
+    "resolution": {
+        "width": 1600,
+        "height":1200
+    },
+    "aruco": "DICT_APRILTAG_36H11",
+    "rejectingIds":[]
+  },
+  "tagPoseEstimator": {
+    "tagSize":0.165
+  },
+  "Calibration":{
+    "charuco_dict": "DICT_6X6_250",
+    "charuco_board": {
+        "squares_x": 5,
+        "squares_y": 7,
+        "square_length": 0.037,
+        "marker_length": 0.022
+    },
+    "image_path": "/home/jetson/Desktop/BlackHoleVision/BlackHoleVision1.0(5,19,2024)/calibration/calibration_videos/video_*.jpg"
+  },
+  "objectDetection":{
+    "modelName":"last.pt" 
+  },
+  "output":
+  {
+    "networkTable":{
+      "teamNumber":1002
+    }
+  }
+}
